@@ -1,5 +1,5 @@
-import Starling from "./starling/core/Starling";
+// import Starling from "./starling/core/Starling";
 
-Starling.init(800,600);
+StarlingJS.Starling.init(800,600);
 
-new Starling(null,null);
+new StarlingJS.Starling(null,null);

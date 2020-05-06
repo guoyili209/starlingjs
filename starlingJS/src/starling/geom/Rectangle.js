@@ -54,10 +54,8 @@ class Rectangle {
     }
     intersection(rect, out = null) {
         if (!this.intersects(rect))
-            return null;
-        if(!out){
-            out = new Rectangle();
-        }
+            return null;        
+        out || (out = new Rectangle());        
         out.x = Math.max(this.x, rect.x);
         out.y = Math.max(this.y, rect.y);
         out.width = Math.min(this.right, rect.right) - out.x;

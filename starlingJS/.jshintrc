@@ -1,3 +1,11 @@
 {
-    "esversion": 6
+    "bitwise": false,
+    "esversion": 6,
+    "futurehostile": true,
+    "latedef": true,
+    "maxerr": 10000,
+    "browser": true,
+    "globals": {
+
+    }
 }
