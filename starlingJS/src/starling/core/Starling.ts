@@ -1,13 +1,18 @@
-import Rectangle from '../geom/Rectangle';
+import Rectangle from './../geom/Rectangle';
+import {starling} from './../display/Stage'; 
 class Starling {
-    constructor(rootClass, viewPort, renderMode = "auto", profile = "auto") {
-        let canvas = document.getElementById('starlingCanvas');
+    private _rootClass:any;
+    private _viewPort:Rectangle;
+    private _previousViewPort:Rectangle;
+
+    constructor(rootClass:any, viewPort:Rectangle, renderMode = "auto", profile = "auto") {
+        let canvas:any = document.getElementById('starlingCanvas');
         viewPort = viewPort || new Rectangle(0, 0, canvas.width, canvas.height);
 
         this._rootClass = rootClass;
         this._viewPort = viewPort;
         this._previousViewPort = new Rectangle();
-        this._stage = new Stage(viewPort.width, viewPort.height, stage.color);
+        this._stage = new starling.display.Stage(viewPort.width, viewPort.height, stage.color);
         this.context3D = this.createGLContext(canvas);
 
         this.initialize();
@@ -57,6 +62,3 @@ class Starling {
         document.body.appendChild(canvas);
     }
 }
-window.StarlingJS||(window.StarlingJS={});
-window.StarlingJS.Starling = Starling;
-export default window.StarlingJS.Starling;
