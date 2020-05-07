@@ -1,9 +1,12 @@
 import Rectangle from './../geom/Rectangle';
 import {starling} from './../display/Stage'; 
+import { StarlingJS } from '../display/DisplayObjectContainer';
 class Starling {
     private _rootClass:any;
     private _viewPort:Rectangle;
     private _previousViewPort:Rectangle;
+    private _stage:starling.display.Stage;
+    context3D;
 
     constructor(rootClass:any, viewPort:Rectangle, renderMode = "auto", profile = "auto") {
         let canvas:any = document.getElementById('starlingCanvas');

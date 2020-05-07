@@ -1,4 +1,4 @@
-export module StarlingJS {
+module StarlingJS {
     export class Point {
         x: number;
         y: number;
