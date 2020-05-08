@@ -1,10 +1,10 @@
-export module starling.display {
+module StarlingJS {
     export class Stage extends DisplayObjectContainer {
         private _width:number;
         private _height:number;
         private _color:any;
         private _fieldOfView:number;
-        private _projectionOffset:
+        private _projectionOffset:Point;
         constructor(width, height, color = 0) {
             super();
             this._width = width;

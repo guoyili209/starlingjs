@@ -1,6 +1,6 @@
 module StarlingJS {
     export class EventDispatcher {
-        private _eventListeners: Dictionary | null;
+        private _eventListeners: Dictionary | null = null;
         private _eventStack: Array<string> = new Array<string>();
 
         /** Helper object. */
@@ -64,7 +64,7 @@ module StarlingJS {
          *  travel up along the line of parents, until it either hits the root object or someone
          *  stops its propagation manually. */
         dispatchEvent(event: Event): void {
-            var bubbles: Boolean = event.bubbles;
+            var bubbles: boolean = event.bubbles;
 
             if (!bubbles && (this._eventListeners == null || !(event.type in this._eventListeners)))
                 return; // no need to do anything
@@ -72,11 +72,11 @@ module StarlingJS {
             // we save the current target and restore it later;
             // this allows users to re-dispatch events without creating a clone.
 
-            var previousTarget: EventDispatcher = event.target;
+            var previousTarget: EventDispatcher | null = event.target;
             event.setTarget(this);
 
-            if (bubbles && this instanceof DisplayObject) bubbleEvent(event);
-            else invokeEvent(event);
+            if (bubbles && this instanceof DisplayObject) this.bubbleEvent(event);
+            else this.invokeEvent(event);
 
             if (previousTarget) event.setTarget(previousTarget);
         }
@@ -85,33 +85,33 @@ module StarlingJS {
          *  Invokes an event on the current object. This method does not do any bubbling, nor
          *  does it back-up and restore the previous target on the event. The 'dispatchEvent' 
          *  method uses this method internally. */
-        invokeEvent(event: Event): Boolean {
-            var listeners: Array = _eventListeners ? _eventListeners[event.type] as Array : null;
-            var numListeners: int = listeners == null ? 0 : listeners.length;
+        invokeEvent(event: Event): boolean {
+            var listeners: any = this._eventListeners ? this._eventListeners[event.type] as Array<any> : null;
+            var numListeners: number = listeners == null ? 0 : listeners.length;
 
             if (numListeners) {
                 event.setCurrentTarget(this);
-                _eventStack[_eventStack.length] = event.type;
+                this._eventStack[this._eventStack.length] = event.type;
 
                 // we can enumerate directly over the vector, because:
                 // when somebody modifies the list while we're looping, "addEventListener" is not
                 // problematic, and "removeEventListener" will create a new Vector, anyway.
 
-                for (var i: int = 0; i < numListeners; ++i) {
+                for (var i: number = 0; i < numListeners; ++i) {
                     var listener: Function = listeners[i] as Function;
-                    var numArgs: int = listener.length;
+                    var numArgs: number = listener.length;
 
                     if (numArgs == 0) listener();
                     else if (numArgs == 1) listener(event);
                     else listener(event, event.data);
 
                     if (event.stopsImmediatePropagation) {
-                        _eventStack.pop();
+                        this._eventStack.pop();
                         return true;
                     }
                 }
 
-                _eventStack.pop();
+                this._eventStack.pop();
 
                 return event.stopsPropagation;
             }
@@ -125,32 +125,35 @@ module StarlingJS {
             // we determine the bubble chain before starting to invoke the listeners.
             // that way, changes done by the listeners won't affect the bubble chain.
 
-            var chain: Vector.<EventDispatcher>;
-            var element: DisplayObject = this as DisplayObject;
-            var length: int = 1;
+            var chain: Array<EventDispatcher>;
+            var element: DisplayObject | any = this;
+            var length: number = 1;
 
-            if (sBubbleChains.length > 0) { chain = sBubbleChains.pop(); chain[0] = element; }
-            else chain = new < EventDispatcher > [element];
+            if (EventDispatcher.sBubbleChains.length > 0) { chain = EventDispatcher.sBubbleChains.pop(); chain[0] = element; }
+            else {
+                chain = new Array<EventDispatcher>();
+                chain.push(element);
+            }
 
             while ((element = element.parent) != null)
-                chain[int(length++)] = element;
+                chain[<number>(length++)] = element;
 
-            for (var i: int = 0; i < length; ++i) {
-                var stopPropagation: Boolean = chain[i].invokeEvent(event);
+            for (var i: number = 0; i < length; ++i) {
+                var stopPropagation: boolean = chain[i].invokeEvent(event);
                 if (stopPropagation) break;
             }
 
             chain.length = 0;
-            sBubbleChains[sBubbleChains.length] = chain; // avoid 'push'
+            EventDispatcher.sBubbleChains[EventDispatcher.sBubbleChains.length] = chain; // avoid 'push'
         }
 
         /** Dispatches an event with the given parameters to all objects that have registered 
          *  listeners for the given type. The method uses an internal pool of event objects to 
          *  avoid allocations. */
-        dispatchEventWith(type: string, bubbles: Boolean = false, data: Object = null): void {
-            if (bubbles || hasEventListener(type)) {
+        dispatchEventWith(type: string, bubbles: boolean = false, data: Object | null = null): void {
+            if (bubbles || this.hasEventListener(type)) {
                 var event: Event = Event.fromPool(type, bubbles, data);
-                dispatchEvent(event);
+                this.dispatchEvent(event);
                 Event.toPool(event);
             }
         }
@@ -158,8 +161,8 @@ module StarlingJS {
         /** If called with one argument, figures out if there are any listeners registered for
          *  the given event type. If called with two arguments, also determines if a specific
          *  listener is registered. */
-        hasEventListener(type: string, listener: Function = null): Boolean {
-            var listeners: Array = _eventListeners ? _eventListeners[type] as Array : null;
+        hasEventListener(type: string, listener: Function | null = null): boolean {
+            var listeners: any = this._eventListeners ? this._eventListeners[type] as Array<Function> : null;
             if (listeners == null) return false;
             else {
                 if (listener != null) return listeners.indexOf(listener) != -1;
@@ -167,3 +170,4 @@ module StarlingJS {
             }
         }
     }
+}
