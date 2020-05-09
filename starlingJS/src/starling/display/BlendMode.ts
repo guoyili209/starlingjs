@@ -9,7 +9,7 @@
 // =================================================================================================
 
 module StarlingJS {
-    class BlendMode {
+    export class BlendMode {
         private _name: string;
         private _sourceFactor: string;
         private _destinationFactor: string;

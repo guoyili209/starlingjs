@@ -112,7 +112,7 @@ module StarlingJS {
             Vector3D.transformQuat(Vector3D.ForwardRH, this, Quaternion.TEMPVector31);
             Vector3D.transformQuat(Vector3D.Up, this, Quaternion.TEMPVector32);
             var upe = Quaternion.TEMPVector32.elements;
-            Quaternion.angleTo(Vector3.ZERO, Quaternion.TEMPVector31, Quaternion.TEMPVector33);
+            Quaternion.angleTo(Vector3D.ZERO, Quaternion.TEMPVector31, Quaternion.TEMPVector33);
             var anglee = Quaternion.TEMPVector33.elements;
             if (anglee[0] == Math.PI / 2) {
                 anglee[1] = Quaternion.arcTanAngle(upe[2], upe[0]);
@@ -121,10 +121,10 @@ module StarlingJS {
                 anglee[1] = Quaternion.arcTanAngle(-upe[2], -upe[0]);
                 anglee[2] = 0;
             } else {
-                Matrix4x4.createRotationY(-anglee[1], Quaternion.TEMPMatrix0);
-                Matrix4x4.createRotationX(-anglee[0], Quaternion.TEMPMatrix1);
-                Vector3.transformCoordinate(Quaternion.TEMPVector32, Quaternion.TEMPMatrix0, Quaternion.TEMPVector32);
-                Vector3.transformCoordinate(Quaternion.TEMPVector32, Quaternion.TEMPMatrix1, Quaternion.TEMPVector32);
+                Matrix3D.createRotationY(-anglee[1], Quaternion.TEMPMatrix0);
+                Matrix3D.createRotationX(-anglee[0], Quaternion.TEMPMatrix1);
+                Vector3D.transformCoordinate(Quaternion.TEMPVector32, Quaternion.TEMPMatrix0, Quaternion.TEMPVector32);
+                Vector3D.transformCoordinate(Quaternion.TEMPVector32, Quaternion.TEMPMatrix1, Quaternion.TEMPVector32);
                 anglee[2] = Quaternion.arcTanAngle(upe[1], -upe[0]);
             }
             if (anglee[1] <= -Math.PI)
@@ -421,7 +421,7 @@ module StarlingJS {
             return oe;
         }
 
-        Quaternion.lerp(left, right, t, out) {
+        static lerp(left, right, t, out) {
             var e = out.elements;
             var f = left.elements;
             var g = right.elements;
@@ -432,7 +432,7 @@ module StarlingJS {
             e[3] = aw + t * (g[3] - aw);
         }
 
-        Quaternion.add(left, right, out) {
+        static add(left, right, out) {
             var e = out.elements;
             var f = left.elements;
             var g = right.elements;
@@ -442,22 +442,22 @@ module StarlingJS {
             e[3] = f[3] + g[3];
         }
 
-        Quaternion.dot(left, right) {
+        static dot(left, right) {
             var f = left.elements;
             var g = right.elements;
             return f[0] * g[0] + f[1] * g[1] + f[2] * g[2] + f[3] * g[3];
         }
 
-        Quaternion.rotationLookAt(forward, up, out) {
-            Quaternion.lookAt(Vector3.ZERO, forward, up, out);
+        static rotationLookAt(forward, up, out) {
+            Quaternion.lookAt(Vector3D.ZERO, forward, up, out);
         }
 
-        Quaternion.lookAt(eye, target, up, out) {
-            Matrix3x3.lookAt(eye, target, up, Quaternion._tempMatrix3x3);
+        static lookAt(eye, target, up, out) {
+            Matrix3D.lookAt(eye, target, up, Quaternion._tempMatrix3x3);
             Quaternion.rotationMatrix(Quaternion._tempMatrix3x3, out);
         }
 
-        Quaternion.invert(value, out) {
+        static invert(value, out) {
             var vE = value.elements;
             var oE = out.elements;
             var lengthSq = value.lengthSquared();
@@ -470,7 +470,7 @@ module StarlingJS {
             }
         }
 
-        Quaternion.rotationMatrix(matrix3x3, out) {
+        static rotationMatrix(matrix3x3, out) {
             var me = matrix3x3.elements;
             var m11 = me[0];
             var m12 = me[1];
@@ -515,9 +515,14 @@ module StarlingJS {
             }
         }
 
-        Quaternion.DEFAULT = new Quaternion();
-        __static(Quaternion,
-            ['TEMPVector30', function() { return this.TEMPVector30 = new Vector3(); }, 'TEMPVector31', function() { return this.TEMPVector31 = new Vector3(); }, 'TEMPVector32', function() { return this.TEMPVector32 = new Vector3(); }, 'TEMPVector33', function() { return this.TEMPVector33 = new Vector3(); }, 'TEMPMatrix0', function() { return this.TEMPMatrix0 = new Matrix4x4(); }, 'TEMPMatrix1', function() { return this.TEMPMatrix1 = new Matrix4x4(); }, '_tempMatrix3x3', function() { return this._tempMatrix3x3 = new Matrix3x3(); }, 'NAN', function() { return this.NAN = new Quaternion(NaN, NaN, NaN, NaN); }
-        ]);
-    return Quaternion;
-}}
+        static DEFAULT = new Quaternion();
+        static TEMPVector30 = new Vector3D();
+        static TEMPVector31 = new Vector3D();
+        static TEMPVector32 = new Vector3D();
+        static TEMPVector33 = new Vector3D();
+        static TEMPMatrix0 = new Matrix3D();
+        static TEMPMatrix1 = new Matrix3D();
+        static _tempMatrix3x3 = new Matrix3D();
+        static NAN = new Quaternion(NaN, NaN, NaN, NaN);
+    }
+}

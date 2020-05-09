@@ -27,7 +27,12 @@ module StarlingJS {
             this.elements[2] = array[offset + 2];
             this.elements[3] = array[offset + 3];
         }
-
+        setTo(xa, ya, za, wa?) {
+            this.elements[0] = xa;
+            this.elements[1] = ya;
+            this.elements[2] = za;
+            (wa && wa > -1) && (this.elements[3] = wa);
+        }
         /**
         *克隆。
         *@param destObject 克隆源。
@@ -304,8 +309,25 @@ module StarlingJS {
             destination[1] = iy * qw + iw * -qy + iz * -qx - ix * -qz;
             destination[2] = iz * qw + iw * -qz + ix * -qy - iy * -qx;
         }
-        static ForwardRH=new Vector3D(0,0,-1);
-        static Up=new Vector3D(0,1,0);
+        static transformCoordinate(coordinate, transform, result) {
+            var vectorElem = Vector3D._tempVector4.elements;
+            var coordinateElem = coordinate.elements;
+            var coordinateX = coordinateElem[0];
+            var coordinateY = coordinateElem[1];
+            var coordinateZ = coordinateElem[2];
+            var transformElem = transform.elements;
+            vectorElem[0] = (coordinateX * transformElem[0]) + (coordinateY * transformElem[4]) + (coordinateZ * transformElem[8]) + transformElem[12];
+            vectorElem[1] = (coordinateX * transformElem[1]) + (coordinateY * transformElem[5]) + (coordinateZ * transformElem[9]) + transformElem[13];
+            vectorElem[2] = (coordinateX * transformElem[2]) + (coordinateY * transformElem[6]) + (coordinateZ * transformElem[10]) + transformElem[14];
+            vectorElem[3] = 1.0 / ((coordinateX * transformElem[3]) + (coordinateY * transformElem[7]) + (coordinateZ * transformElem[11]) + transformElem[15]);
+            var resultElem = result.elements;
+            resultElem[0] = vectorElem[0] * vectorElem[3];
+            resultElem[1] = vectorElem[1] * vectorElem[3];
+            resultElem[2] = vectorElem[2] * vectorElem[3];
+        }
+        static ForwardRH = new Vector3D(0, 0, -1);
+        static Up = new Vector3D(0, 1, 0);
+        static _tempVector4 = new Vector3D();
         //------------vector3 end--------------
 
         static ZERO = new Vector3D();

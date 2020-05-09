@@ -570,6 +570,47 @@ module StarlingJS {
             oe[13] = ve[1];
             oe[14] = ve[2];
         }
+        //----matrix3x3 start----
+        static lookAt(eye, target, up, out) {
+            Vector3D.subtract(eye, target, Matrix3D._tempV30);
+            Vector3D.normalize(Matrix3D._tempV30, Matrix3D._tempV30);
+            Vector3D.cross(up, Matrix3D._tempV30, Matrix3D._tempV31);
+            Vector3D.normalize(Matrix3D._tempV31, Matrix3D._tempV31);
+            Vector3D.cross(Matrix3D._tempV30, Matrix3D._tempV31, Matrix3D._tempV32);
+            var v0e = Matrix3D._tempV30.elements;
+            var v1e = Matrix3D._tempV31.elements;
+            var v2e = Matrix3D._tempV32.elements;
+            var me = out.elements;
+            me[0] = v1e[0];
+            me[3] = v1e[1];
+            me[6] = v1e[2];
+            me[1] = v2e[0];
+            me[4] = v2e[1];
+            me[7] = v2e[2];
+            me[2] = v0e[0];
+            me[5] = v0e[1];
+            me[8] = v0e[2];
+        }
+        static _tempV30 = new Vector3D();
+        static _tempV31 = new Vector3D();
+        static _tempV32 = new Vector3D();
+        //----matrix3x3 end----
+
+
+        copyRawDataFrom(arr: Array<number>) {
+            var i, s;
+            s = this.elements;
+            for (i = 0; i < 16; ++i) {
+                s[i] = arr[i];
+            }
+        }
+        copyRawDataTo(arr: Array<number>) {
+            var i, s;
+            s = this.elements;
+            for (i = 0; i < 16; ++i) {
+                arr[i] = s[i];
+            }
+        }
         static _tempMatrix4x4 = new Matrix3D();
         static _tempVector0 = new Vector3D();
         static _tempVector1 = new Vector3D();
