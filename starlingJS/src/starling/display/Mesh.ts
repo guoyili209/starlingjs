@@ -14,9 +14,9 @@ module StarlingJS {
         /** @private */  _style: MeshStyle;
         /** @private */  _vertexData: VertexData;
         /** @private */  _indexData: IndexData;
-        /** @private */  _pixelSnapping: Boolean;
+        /** @private */  _pixelSnapping: boolean;
 
-        private static sDefaultStyle: Class = MeshStyle;
+        private static sDefaultStyle: any = MeshStyle;
         private static sDefaultStyleFactory: Function = null;
 
         /** Creates a new mesh with the given vertices and indices.
@@ -28,34 +28,34 @@ module StarlingJS {
             if (vertexData == null) throw new Error("VertexData must not be null");
             if (indexData == null) throw new Error("IndexData must not be null");
 
-            _vertexData = vertexData;
-            _indexData = indexData;
+            this._vertexData = vertexData;
+            this._indexData = indexData;
 
-            setStyle(style, false);
+            this.setStyle(style, false);
         }
 
         /** @inheritDoc */
         dispose(): void {
-            _vertexData.clear();
-            _indexData.clear();
+            this._vertexData.clear();
+            this._indexData.clear();
 
             super.dispose();
         }
 
         /** @inheritDoc */
         hitTest(localPoint: Point): DisplayObject {
-            if (!visible || !touchable || !hitTestMask(localPoint)) return null;
-            else return MeshUtil.containsPoint(_vertexData, _indexData, localPoint) ? this : null;
+            if (!this.visible || !this.touchable || !this.hitTestMask(localPoint)) return null;
+            else return MeshUtil.containsPoint(this._vertexData, this._indexData, localPoint) ? this : null;
         }
 
         /** @inheritDoc */
         getBounds(targetSpace: DisplayObject, out: Rectangle = null): Rectangle {
-            return MeshUtil.calculateBounds(_vertexData, this, targetSpace, out);
+            return MeshUtil.calculateBounds(this._vertexData, this, targetSpace, out);
         }
 
         /** @inheritDoc */
         render(painter: Painter): void {
-            if (_pixelSnapping)
+            if (this._pixelSnapping)
                 MatrixUtil.snapToPixels(painter.state.modelviewMatrix, painter.pixelSize);
 
             painter.batchMesh(this);
@@ -76,20 +76,20 @@ module StarlingJS {
          *  @see #defaultStyle
          *  @see #defaultStyleFactory
          */
-        setStyle(meshStyle: MeshStyle = null, mergeWithPredecessor: Boolean = true): void {
-            if (meshStyle == null) meshStyle = createDefaultStyle(this);
-            else if (meshStyle == _style) return;
+        setStyle(meshStyle: MeshStyle = null, mergeWithPredecessor: boolean = true): void {
+            if (meshStyle == null) meshStyle = this.createDefaultStyle(this);
+            else if (meshStyle == this._style) return;
             else if (meshStyle.target) meshStyle.target.setStyle();
 
-            if (_style) {
-                if (mergeWithPredecessor) meshStyle.copyFrom(_style);
-                _style.setTarget();
+            if (this._style) {
+                if (mergeWithPredecessor) meshStyle.copyFrom(this._style);
+                this._style.setTarget();
             }
 
-            _style = meshStyle;
-            _style.setTarget(this, _vertexData, _indexData);
+            this._style = meshStyle;
+            this._style.setTarget(this, this._vertexData, this._indexData);
 
-            setRequiresRedraw();
+            this.setRequiresRedraw();
         }
 
         /** Creates a new instance of the current default MeshStyle. Internally, this method
@@ -99,13 +99,13 @@ module StarlingJS {
         static createDefaultStyle(instance: Mesh = null): MeshStyle {
             var meshStyle: MeshStyle;
 
-            if (sDefaultStyleFactory != null) {
-                if (sDefaultStyleFactory.length == 0) meshStyle = sDefaultStyleFactory();
-                else meshStyle = sDefaultStyleFactory(instance);
+            if (Mesh.sDefaultStyleFactory != null) {
+                if (Mesh.sDefaultStyleFactory.length == 0) meshStyle = Mesh.sDefaultStyleFactory();
+                else meshStyle = Mesh.sDefaultStyleFactory(instance);
             }
 
             if (meshStyle == null)
-                meshStyle = new sDefaultStyle() as MeshStyle;
+                meshStyle = new Mesh.sDefaultStyle() as MeshStyle;
 
             return meshStyle;
         }
@@ -119,7 +119,7 @@ module StarlingJS {
         /** This method is called whenever the mesh's index data was changed.
          *  The base implementation simply forwards to <code>setRequiresRedraw</code>. */
         setIndexDataChanged(): void {
-            setRequiresRedraw();
+            this.setRequiresRedraw();
         }
 
         // vertex manipulation
@@ -133,53 +133,53 @@ module StarlingJS {
          *  area; some of its optimized methods won't work correctly if that premise is no longer
          *  fulfilled or the original bounds change.</p>
          */
-        getVertexPosition(vertexID: int, out: Point = null): Point {
-            return _style.getVertexPosition(vertexID, out);
+        getVertexPosition(vertexID: number, out: Point = null): Point {
+            return this._style.getVertexPosition(vertexID, out);
         }
 
-        setVertexPosition(vertexID: int, x: Number, y: Number): void {
-            _style.setVertexPosition(vertexID, x, y);
+        setVertexPosition(vertexID: number, x: number, y: number): void {
+            this._style.setVertexPosition(vertexID, x, y);
         }
 
         /** Returns the alpha value of the vertex at the specified index. */
-        getVertexAlpha(vertexID: int): Number {
-            return _style.getVertexAlpha(vertexID);
+        getVertexAlpha(vertexID: number): number {
+            return this._style.getVertexAlpha(vertexID);
         }
 
         /** Sets the alpha value of the vertex at the specified index to a certain value. */
-        setVertexAlpha(vertexID: int, alpha: Number): void {
-            _style.setVertexAlpha(vertexID, alpha);
+        setVertexAlpha(vertexID: number, alpha: number): void {
+            this._style.setVertexAlpha(vertexID, alpha);
         }
 
         /** Returns the RGB color of the vertex at the specified index. */
-        getVertexColor(vertexID: int): uint {
-            return _style.getVertexColor(vertexID);
+        getVertexColor(vertexID: number): number {
+            return this._style.getVertexColor(vertexID);
         }
 
         /** Sets the RGB color of the vertex at the specified index to a certain value. */
-        setVertexColor(vertexID: int, color: uint): void {
-            _style.setVertexColor(vertexID, color);
+        setVertexColor(vertexID: number, color: number): void {
+            this._style.setVertexColor(vertexID, color);
         }
 
         /** Returns the texture coordinates of the vertex at the specified index. */
-        getTexCoords(vertexID: int, out: Point = null): Point {
-            return _style.getTexCoords(vertexID, out);
+        getTexCoords(vertexID: number, out: Point = null): Point {
+            return this._style.getTexCoords(vertexID, out);
         }
 
         /** Sets the texture coordinates of the vertex at the specified index to the given values. */
-        setTexCoords(vertexID: int, u: Number, v: Number): void {
-            _style.setTexCoords(vertexID, u, v);
+        setTexCoords(vertexID: number, u: number, v: number): void {
+            this._style.setTexCoords(vertexID, u, v);
         }
 
         // properties
 
         /** The vertex data describing all vertices of the mesh.
          *  Any change requires a call to <code>setRequiresRedraw</code>. */
-        protected get vertexData(): VertexData { return _vertexData; }
+        protected get vertexData(): VertexData { return this._vertexData; }
 
         /** The index data describing how the vertices are interconnected.
          *  Any change requires a call to <code>setRequiresRedraw</code>. */
-        protected get indexData(): IndexData { return _indexData; }
+        protected get indexData(): IndexData { return this._indexData; }
 
         /** The style that is used to render the mesh. Styles (which are always subclasses of
          *  <code>MeshStyle</code>) provide a means to completely modify the way a mesh is rendered.
@@ -189,58 +189,58 @@ module StarlingJS {
          *  @default MeshStyle
          *  @see #setStyle()
          */
-        get style(): MeshStyle { return _style; }
-        set style(value: MeshStyle): void {
-            setStyle(value);
+        get style(): MeshStyle { return this._style; }
+        set style(value: MeshStyle) {
+            this.setStyle(value);
         }
 
         /** The texture that is mapped to the mesh (or <code>null</code>, if there is none). */
-        get texture(): Texture { return _style.texture; }
-        set texture(value: Texture): void { _style.texture = value; }
+        get texture(): Texture { return this._style.texture; }
+        set texture(value: Texture) { this._style.texture = value; }
 
         /** Changes the color of all vertices to the same value.
          *  The getter simply returns the color of the first vertex. */
-        get color(): uint { return _style.color; }
-        set color(value: uint): void { _style.color = value; }
+        get color(): number { return this._style.color; }
+        set color(value: number) { this._style.color = value; }
 
         /** The smoothing filter that is used for the texture.
          *  @default bilinear */
-        get textureSmoothing(): String { return _style.textureSmoothing; }
-        set textureSmoothing(value: String): void { _style.textureSmoothing = value; }
+        get textureSmoothing(): String { return this._style.textureSmoothing; }
+        set textureSmoothing(value: String) { this._style.textureSmoothing = value; }
 
         /** Indicates if pixels at the edges will be repeated or clamped. Only works for
          *  power-of-two textures; for a solution that works with all kinds of textures,
          *  see <code>Image.tileGrid</code>. @default false */
-        get textureRepeat(): Boolean { return _style.textureRepeat; }
-        set textureRepeat(value: Boolean): void { _style.textureRepeat = value; }
+        get textureRepeat(): boolean { return this._style.textureRepeat; }
+        set textureRepeat(value: boolean) { this._style.textureRepeat = value; }
 
         /** Controls whether or not the instance snaps to the nearest pixel. This can prevent the
          *  object from looking blurry when it's not exactly aligned with the pixels of the screen.
          *  @default false */
-        get pixelSnapping(): Boolean { return _pixelSnapping; }
-        set pixelSnapping(value: Boolean): void { _pixelSnapping = value; }
+        get pixelSnapping(): boolean { return this._pixelSnapping; }
+        set pixelSnapping(value: boolean) { this._pixelSnapping = value; }
 
         /** The total number of vertices in the mesh. */
-        get numVertices(): int { return _vertexData.numVertices; }
+        get numVertices(): number { return this._vertexData.numVertices; }
 
         /** The total number of indices referencing vertices. */
-        get numIndices(): int { return _indexData.numIndices; }
+        get numIndices(): number { return this._indexData.numIndices; }
 
         /** The total number of triangles in this mesh.
          *  (In other words: the number of indices divided by three.) */
-        get numTriangles(): int { return _indexData.numTriangles; }
+        get numTriangles(): number { return this._indexData.numTriangles; }
 
         /** The format used to store the vertices. */
-        get vertexFormat(): VertexDataFormat { return _style.vertexFormat; }
+        get vertexFormat(): VertexDataFormat { return this._style.vertexFormat; }
 
         // static properties
 
         /** The default style used for meshes if no specific style is provided. The default is
          *  <code>starling.rendering.MeshStyle</code>, and any assigned class must be a subclass
          *  of the same. */
-        static get defaultStyle(): Class { return sDefaultStyle; }
-        static set defaultStyle(value: Class): void {
-            sDefaultStyle = value;
+        static get defaultStyle(): any { return Mesh.sDefaultStyle; }
+        static set defaultStyle(value: any) {
+            Mesh.sDefaultStyle = value;
         }
 
         /** A factory method that is used to create the 'MeshStyle' for a mesh if no specific
@@ -257,9 +257,9 @@ module StarlingJS {
          *      return new ColorizeMeshStyle(Math.random() * 0xffffff);
          *  }</listing>
          */
-        static get defaultStyleFactory(): Function { return sDefaultStyleFactory; }
-        static set defaultStyleFactory(value: Function): void {
-            sDefaultStyleFactory = value;
+        static get defaultStyleFactory(): Function { return Mesh.sDefaultStyleFactory; }
+        static set defaultStyleFactory(value: Function) {
+            Mesh.sDefaultStyleFactory = value;
         }
 
         // static methods
