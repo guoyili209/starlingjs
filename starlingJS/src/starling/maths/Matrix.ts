@@ -2,7 +2,7 @@ module StarlingJS {
     export class Matrix {
         static EMPTY = new Matrix();
         static TEMP = new Matrix();
-        static _cache:any[] = [];
+        static _cache: any[] = [];
         inPool;
         bTransform;
         a;
@@ -353,7 +353,15 @@ module StarlingJS {
             dec.bTransform = this.bTransform;
             return dec;
         }
-
+        copyFrom(sourceMatrix) {
+            this.a = sourceMatrix.a
+            this.b = sourceMatrix.b;
+            this.c = sourceMatrix.c;
+            this.d = sourceMatrix.d;
+            this.tx = sourceMatrix.tx;
+            this.ty = sourceMatrix.ty;
+            this.bTransform = sourceMatrix.bTransform;
+        }
         /**
         *返回列出该 Matrix 对象属性的文本值。
         *@return 一个字符串，它包含 Matrix 对象的属性值：a、b、c、d、tx 和 ty。

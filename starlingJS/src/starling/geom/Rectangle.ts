@@ -58,6 +58,16 @@ module StarlingJS{
             }
             return false;
         }
+        containsPoint(pt) {
+            if (this.width <= 0 || this.height <= 0)
+                return false;
+            if (pt.x >= this.x && pt.x < this.right) {
+                if (pt.y >= this.y && pt.y < this.bottom) {
+                    return true;
+                }
+            }
+            return false;
+        }
         intersects(rect) {
             return !(rect.x > (this.x + this.width) || (rect.x + rect.width) < this.x || rect.y > (this.y + this.height) || (rect.y + rect.height) < this.y);
         }

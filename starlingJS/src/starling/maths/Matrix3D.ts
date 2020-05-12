@@ -622,5 +622,27 @@ module StarlingJS {
             0, 0, 0, 0,
             0, 0, 0, 0,
             0, 0, 0, 0);
+
+        //----------Adapter---------
+        copyFrom(sourceMatrix3D) {
+            let e = this.elements;
+            let s = sourceMatrix3D.elements;
+            e[0] = s[0];
+            e[1] = s[1];
+            e[2] = s[2];
+            e[3] = s[3];
+            e[4] = s[4];
+            e[5] = s[5];
+            e[6] = s[6];
+            e[7] = s[7];
+            e[8] = s[8];
+            e[9] = s[9];
+            e[10] = s[10];
+            e[11] = s[11];
+            e[12] = s[12];
+            e[13] = s[13];
+            e[14] = s[14];
+            e[15] = s[15];
+        }
     }
 }

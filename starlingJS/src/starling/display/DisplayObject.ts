@@ -97,7 +97,7 @@ module StarlingJS {
                 out.copyFrom(this.transformationMatrix);
                 return out;
             }
-            else if (targetSpace == null || targetSpace == base) {
+            else if (targetSpace == null || targetSpace == this.base) {
                 // targetCoordinateSpace 'null' represents the target space of the base object.
                 // -> move up from this to base
 
@@ -109,7 +109,7 @@ module StarlingJS {
 
                 return out;
             }
-            else if (targetSpace._parent == this) // optimization
+            else if (targetSpace._parent == (this as any)) // optimization
             {
                 targetSpace.getTransformationMatrix(this, out);
                 out.invert();
@@ -177,7 +177,7 @@ module StarlingJS {
             if (this._mask) {
                 if (this._mask.stage) this.getTransformationMatrix(this._mask, DisplayObject.sHelperMatrixAlt);
                 else {
-                    DisplayObject.sHelperMatrixAlt.copyFrom(this._mask.transformationMatrix);
+                    this._mask.transformationMatrix.copyTo(DisplayObject.sHelperMatrixAlt);
                     DisplayObject.sHelperMatrixAlt.invert();
                 }
 
@@ -359,11 +359,11 @@ module StarlingJS {
             if (targetSpace == this) {
                 return out;
             }
-            else if (targetSpace == _parent || (targetSpace == null && _parent == null)) {
-                out.copyFrom(transformationMatrix3D);
+            else if (targetSpace == this._parent || (targetSpace == null && this._parent == null)) {
+                out.copyFrom(this.transformationMatrix3D);
                 return out;
             }
-            else if (targetSpace == null || targetSpace == base) {
+            else if (targetSpace == null || targetSpace == this.base) {
                 // targetCoordinateSpace 'null' represents the target space of the base object.
                 // -> move up from this to base
 
