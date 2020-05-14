@@ -5,6 +5,13 @@ module StarlingJS {
         private _color:any;
         private _fieldOfView:number;
         private _projectionOffset:Point;
+        private _cameraPosition:Vector3D;
+        private _enterFrameEvent:EnterFrameEvent;
+        private _enterFrameListeners:Array<DisplayObject>;
+
+        private static sMatrix:Matrix = new Matrix();
+        private static sMatrix3D:Matrix3D = new Matrix3D();
+
         constructor(width, height, color = 0) {
             super();
             this._width = width;
@@ -19,18 +26,18 @@ module StarlingJS {
 
         /** @inheritDoc */
         advanceTime(passedTime) {
-            _enterFrameEvent.reset(Event.ENTER_FRAME, false, passedTime);
-            broadcastEvent(_enterFrameEvent);
+            this._enterFrameEvent.reset(Event.ENTER_FRAME, false, passedTime);
+            this.broadcastEvent(this._enterFrameEvent);
         }
 
         /** Returns the object that is found topmost beneath a point in stage coordinates, or  
          *  the stage itself if nothing else is found. */
         hitTest(localPoint) {
-            if (!visible || !touchable) return null;
+            if (!this.visible || !this.touchable) return null;
 
             // locations outside of the stage area shouldn't be accepted
-            if (localPoint.x < 0 || localPoint.x > _width ||
-                localPoint.y < 0 || localPoint.y > _height)
+            if (localPoint.x < 0 || localPoint.x > this._width ||
+                localPoint.y < 0 || localPoint.y > this._height)
                 return null;
 
             // if nothing else is hit, the stage returns itself as target
@@ -43,10 +50,10 @@ module StarlingJS {
         getStageBounds(targetSpace, out = null) {
             if (out == null) out = new Rectangle();
 
-            out.setTo(0, 0, _width, _height);
-            getTransformationMatrix(targetSpace, sMatrix);
+            out.setTo(0, 0, this._width, this._height);
+            this.getTransformationMatrix(targetSpace, Stage.sMatrix);
 
-            return RectangleUtil.getBounds(out, sMatrix, out);
+            return RectangleUtil.getBounds(out, Stage.sMatrix, out);
         }
 
         /** Returns the bounds of the screen (or application window, on Desktop) relative to
@@ -54,124 +61,124 @@ module StarlingJS {
          *  however, this changes if the viewPort is customized. */
         getScreenBounds(targetSpace, out = null) {
             var target = this.starling;
-            if (target == null) return getStageBounds(targetSpace, out);
+            if (target == null) return this.getStageBounds(targetSpace, out);
             if (out == null) out = new Rectangle();
 
             var nativeStage = target.nativeStage;
             var viewPort = target.viewPort;
-            var scaleX = _width / viewPort.width;
-            var scaleY = _height / viewPort.height;
+            var scaleX = this._width / viewPort.width;
+            var scaleY = this._height / viewPort.height;
             var x = -viewPort.x * scaleX;
             var y = -viewPort.y * scaleY;
 
             out.setTo(x, y, nativeStage.stageWidth * scaleX, nativeStage.stageHeight * scaleY);
-            getTransformationMatrix(targetSpace, sMatrix);
+            this.getTransformationMatrix(targetSpace, Stage.sMatrix);
 
-            return RectangleUtil.getBounds(out, sMatrix, out);
+            return RectangleUtil.getBounds(out, Stage.sMatrix, out);
         }
 
         getCameraPosition(space = null, out = null) {
-            getTransformationMatrix3D(space, sMatrix3D);
+            this.getTransformationMatrix3D(space, Stage.sMatrix3D);
 
-            return MatrixUtil.transformCoords3D(sMatrix3D,
-                _width / 2 + _projectionOffset.x, _height / 2 + _projectionOffset.y,
-                -focalLength, out);
+            return MatrixUtil.transformCoords3D(Stage.sMatrix3D,
+                this._width / 2 + this._projectionOffset.x, this._height / 2 + this._projectionOffset.y,
+                -this.focalLength, out);
         }
 
         addEnterFrameListener(listener) {
-            var index = _enterFrameListeners.indexOf(listener);
-            if (index < 0) _enterFrameListeners[_enterFrameListeners.length] = listener;
+            var index = this._enterFrameListeners.indexOf(listener);
+            if (index < 0) this._enterFrameListeners[this._enterFrameListeners.length] = listener;
         }
 
 
         removeEnterFrameListener(listener) {
-            var index = _enterFrameListeners.indexOf(listener);
-            if (index >= 0) _enterFrameListeners.removeAt(index);
+            var index = this._enterFrameListeners.indexOf(listener);
+            if (index >= 0) this._enterFrameListeners.removeAt(index);
         }
 
 
         getChildEventListeners(object, eventType,
-            _enterFrameListeners) {
+            listeners) {
             if (eventType == Event.ENTER_FRAME && object == this) {
-                for (var i = 0, length = _enterFrameListeners.length; i < length; ++i)
-                    listeners[listeners.length] = _enterFrameListeners[i]; // avoiding 'push'
+                for (var i = 0, length = this._enterFrameListeners.length; i < length; ++i)
+                    listeners[listeners.length] = this._enterFrameListeners[i]; // avoiding 'push'
             }
             else
                 super.getChildEventListeners(object, eventType, listeners);
         }
 
         set width(value) {
-            throw new IllegalOperationError("Cannot set width of stage");
+            throw new Error("Cannot set width of stage");
         }
 
         set height(value) {
-            throw new IllegalOperationError("Cannot set height of stage");
+            throw new Error("Cannot set height of stage");
         }
 
         set x(value) {
-            throw new IllegalOperationError("Cannot set x-coordinate of stage");
+            throw new Error("Cannot set x-coordinate of stage");
         }
 
         set y(value) {
-            throw new IllegalOperationError("Cannot set y-coordinate of stage");
+            throw new Error("Cannot set y-coordinate of stage");
         }
 
         set scaleX(value) {
-            throw new IllegalOperationError("Cannot scale stage");
+            throw new Error("Cannot scale stage");
         }
 
         set scaleY(value) {
-            throw new IllegalOperationError("Cannot scale stage");
+            throw new Error("Cannot scale stage");
         }
 
         set rotation(value) {
-            throw new IllegalOperationError("Cannot rotate stage");
+            throw new Error("Cannot rotate stage");
         }
 
 
         set skewX(value) {
-            throw new IllegalOperationError("Cannot skew stage");
+            throw new Error("Cannot skew stage");
         }
 
 
         set skewY(value) {
-            throw new IllegalOperationError("Cannot skew stage");
+            throw new Error("Cannot skew stage");
         }
 
 
         set filter(value) {
-            throw new IllegalOperationError("Cannot add filter to stage. Add it to 'root' instead!");
+            throw new Error("Cannot add filter to stage. Add it to 'root' instead!");
         }
 
         /** The background color of the stage.
          *  When Starling clears the render context (which happens automatically once per frame),
          *  it will use this this color. Note that it's actually an 'ARGB' value: if you need
          *  the context to be cleared with a specific alpha value, include it in the color. */
-        get color() { return _color; }
+        get color() { return this._color; }
         set color(value) {
-            if (_color != value) {
-                _color = value;
-                setRequiresRedraw();
+            if (this._color != value) {
+                this._color = value;
+                this.setRequiresRedraw();
             }
         }
 
         /** The width of the stage coordinate system. Change it to scale its contents relative
          *  to the <code>viewPort</code> property of the Starling object. */
-        get stageWidth() { return _width; }
+        get stageWidth() { return this._width; }
         set stageWidth(value) {
-            if (_width != value) {
-                _width = value;
-                setRequiresRedraw();
+            if (this._width != value) {
+                this._width = value;
+                this.setRequiresRedraw();
             }
         }
 
         /** The height of the stage coordinate system. Change it to scale its contents relative
          *  to the <code>viewPort</code> property of the Starling object. */
-        get stageHeight() { return _height; }
+        get stageHeight() { return this._height; }
         set stageHeight(value) {
-            if (_height != value) {
-                _height = value;
-                setRequiresRedraw();
+            if (this._height != value) {
+                this._height = value;
+                this.setRequiresRedraw();
             }
         }
 
@@ -189,12 +196,12 @@ module StarlingJS {
         /** The distance between the stage and the camera. Changing this value will update the
          *  field of view accordingly. */
         get focalLength() {
-            return _width / (2 * Math.tan(_fieldOfView / 2));
+            return this._width / (2 * Math.tan(this._fieldOfView / 2));
         }
 
         set focalLength(value) {
-            _fieldOfView = 2 * Math.atan(stageWidth / (2 * value));
-            setRequiresRedraw();
+            this._fieldOfView = 2 * Math.atan(this.stageWidth / (2 * value));
+            this.setRequiresRedraw();
         }
 
         /** Specifies an angle (radian, between zero and PI) for the field of view. This value
@@ -207,20 +214,20 @@ module StarlingJS {
          *
          *  @default 1.0
          */
-        get fieldOfView() { return _fieldOfView; }
+        get fieldOfView() { return this._fieldOfView; }
         set fieldOfView(value) {
-            _fieldOfView = value;
-            setRequiresRedraw();
+            this._fieldOfView = value;
+            this.setRequiresRedraw();
         }
 
         /** A vector that moves the camera away from its default position in the center of the
          *  stage. Use this property to change the center of projection, i.e. the vanishing
          *  point for 3D display objects. <p>CAUTION: not a copy, but the actual object!</p>
          */
-        get projectionOffset() { return _projectionOffset; }
+        get projectionOffset() { return this._projectionOffset; }
         set projectionOffset(value) {
-            _projectionOffset.setTo(value.x, value.y);
-            setRequiresRedraw();
+            this._projectionOffset.setTo(value.x, value.y);
+            this.setRequiresRedraw();
         }
 
         /** The global position of the camera. This property can only be used to find out the
@@ -231,7 +238,7 @@ module StarlingJS {
          *  <p>CAUTION: not a copy, but the actual object!</p>
          */
         get cameraPosition() {
-            return getCameraPosition(null, _cameraPosition);
+            return this.getCameraPosition(null, this._cameraPosition);
         }
     }
 }

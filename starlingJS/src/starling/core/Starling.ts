@@ -5,6 +5,33 @@ module StarlingJS {
         private _viewPort: Rectangle;
         private _previousViewPort: Rectangle;
         private _stage: Stage|any;
+        private _juggler:Juggler;
+        private _painter:Painter;
+        private _touchProcessor:TouchProcessor;
+        private _antiAliasing:number;
+        private _frameTimestamp:Number;
+        private _frameID:number;
+        private _leftMouseDown:Boolean;
+        private _statsDisplay:StatsDisplay;
+        private _statsDisplayAlign:Object;
+        private _started:Boolean;
+        private _rendering:Boolean;
+        private _supportHighResolutions:Boolean;
+        private _supportBrowserZoom:Boolean;
+        private _skipUnchangedFrames:Boolean;
+        private _showStats:Boolean;
+        private _supportsCursor:Boolean;
+        private _multitouchEnabled:Boolean;
+
+        private _viewPort:Rectangle;
+        private _previousViewPort:Rectangle;
+        private _clippedViewPort:Rectangle;
+
+        private _nativeStage:flash.display.Stage;
+        private _nativeStageEmpty:Boolean;       
+
+        private static sCurrent:Starling;
+        private static sAll:Array<Starling> = new Array<Starling>();
         context3D;
 
         constructor(rootClass: any, viewPort: Rectangle, renderMode = "auto", profile = "auto") {
@@ -12,11 +39,13 @@ module StarlingJS {
             let canvas: any = document.getElementById('starlingCanvas');
             viewPort = viewPort || new Rectangle(0, 0, canvas.width, canvas.height);
 
+            SystemUtil.initialize();
             this._rootClass = rootClass;
             this._viewPort = viewPort;
             this._previousViewPort = new Rectangle();
-            this._stage = new Stage(viewPort.width, viewPort.height, stage.color);
+            this._stage = new Stage(viewPort.width, viewPort.height, 0);
             this.context3D = this.createGLContext(canvas);
+
 
             this.initialize();
         }
