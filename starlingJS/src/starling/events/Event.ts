@@ -93,7 +93,7 @@ module StarlingJS {
         get bubbles(): boolean { return this._bubbles; }
 
         /** The object that dispatched the event. */
-        get target(): EventDispatcher|null { return this._target; }
+        get target(): EventDispatcher { return this._target; }
 
         /** The object the event is currently bubbling at. */
         get currentTarget(): EventDispatcher|null { return this._currentTarget; }
