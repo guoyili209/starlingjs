@@ -623,7 +623,7 @@ module StarlingJS {
             0, 0, 0, 0,
             0, 0, 0, 0);
 
-        //----------Adapter---------
+        //----------AS3 Matrix3D(Adapter)---------
         copyFrom(sourceMatrix3D) {
             let e = this.elements;
             let s = sourceMatrix3D.elements;
@@ -643,6 +643,31 @@ module StarlingJS {
             e[13] = s[13];
             e[14] = s[14];
             e[15] = s[15];
+        }
+        append(lhs: Matrix3D) {
+            Matrix3D.multiply(lhs, this, this);
+        }
+        prepend(lhs: Matrix3D) {
+            var i, e, a, b, ai0, ai1, ai2, ai3;
+            e = this.elements;
+            a = this.elements;
+            b = lhs.elements;
+            if (e === a) {
+                a = new Float32Array(16);
+                for (i = 0; i < 16; ++i) {
+                    a[i] = e[i];
+                }
+            }
+            for (i = 0; i < 4; i++) {
+                ai0 = a[i];
+                ai1 = a[i + 4];
+                ai2 = a[i + 8];
+                ai3 = a[i + 12];
+                e[i] = ai0 * b[0] + ai1 * b[1] + ai2 * b[2] + ai3 * b[3];
+                e[i + 4] = ai0 * b[4] + ai1 * b[5] + ai2 * b[6] + ai3 * b[7];
+                e[i + 8] = ai0 * b[8] + ai1 * b[9] + ai2 * b[10] + ai3 * b[11];
+                e[i + 12] = ai0 * b[12] + ai1 * b[13] + ai2 * b[14] + ai3 * b[15];
+            }
         }
     }
 }
