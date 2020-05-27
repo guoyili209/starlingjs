@@ -63,7 +63,7 @@ module StarlingJS {
                     this.setChildIndex(child, index); // avoids dispatching events
                 }
                 else {
-                    this._children.insertAt(index, child);
+                    this._children.splice(index, 0, child);
 
                     child.removeFromParent();
                     child.setParent(this);
@@ -219,8 +219,8 @@ module StarlingJS {
                 this._children[0].getBounds(targetSpace, out);
             }
             else {
-                var minX: number = number.MAX_VALUE, maxX: number = -number.MAX_VALUE;
-                var minY: number = number.MAX_VALUE, maxY: number = -number.MAX_VALUE;
+                var minX: number = Number.MAX_VALUE, maxX: number = -Number.MAX_VALUE;
+                var minY: number = Number.MAX_VALUE, maxY: number = -Number.MAX_VALUE;
 
                 for (var i: number = 0; i < numChildren; ++i) {
                     this._children[i].getBounds(targetSpace, out);
@@ -285,11 +285,11 @@ module StarlingJS {
                     if (child._lastParentOrSelfChangeFrameID != frameID &&
                         child._lastChildChangeFrameID != frameID &&
                         child._tokenFrameID == frameID - 1 && cacheEnabled) {
-                        painter.fillToken(sCacheToken);
+                        painter.fillToken(DisplayObjectContainer.sCacheToken);
                         painter.drawFromCache(child._pushToken, child._popToken);
                         painter.fillToken(child._popToken);
 
-                        child._pushToken.copyFrom(sCacheToken);
+                        child._pushToken.copyFrom(DisplayObjectContainer.sCacheToken);
                     }
                     else {
                         var pushToken: BatchToken = cacheEnabled ? child._pushToken : null;
@@ -329,7 +329,7 @@ module StarlingJS {
             // care that the static helper vector does not get corrupted.
 
             var fromIndex: number = DisplayObjectContainer.sBroadcastListeners.length;
-            getChildEventListeners(this, event.type, DisplayObjectContainer.sBroadcastListeners);
+            this.getChildEventListeners(this, event.type, DisplayObjectContainer.sBroadcastListeners);
             var toIndex: number = DisplayObjectContainer.sBroadcastListeners.length;
 
             for (var i: number = fromIndex; i < toIndex; ++i)
@@ -354,7 +354,7 @@ module StarlingJS {
          *  (Similar to 'mouseChildren' in the classic display list, but with inverted logic.)
          *  @default false */
         get touchGroup(): boolean { return this._touchGroup; }
-        set touchGroup(value: boolean): void { this._touchGroup = value; }
+        set touchGroup(value: boolean) { this._touchGroup = value; }
 
         // helpers
 
