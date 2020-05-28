@@ -17,8 +17,8 @@ module StarlingJS {
         private _touchGroup: boolean;
 
         // helper objects
-        private static sHelperMatrix: Matrix = new Matrix();
-        private static sHelperPoint: Point = new Point();
+        private static sHelperMatrix_D: Matrix = new Matrix();
+        private static sHelperPoint_D: Point = new Point();
         private static sBroadcastListeners: Array<DisplayObject> = new Array<DisplayObject>();
         private static sSortBuffer: Array<DisplayObject> = new Array<DisplayObject>();
         private static sCacheToken: BatchToken = new BatchToken();
@@ -211,9 +211,9 @@ module StarlingJS {
             var numChildren: number = this._children.length;
 
             if (numChildren == 0) {
-                this.getTransformationMatrix(targetSpace, DisplayObjectContainer.sHelperMatrix);
-                MatrixUtil.transformCoords(DisplayObjectContainer.sHelperMatrix, 0.0, 0.0, DisplayObjectContainer.sHelperPoint);
-                out.setTo(DisplayObjectContainer.sHelperPoint.x, DisplayObjectContainer.sHelperPoint.y, 0, 0);
+                this.getTransformationMatrix(targetSpace, DisplayObjectContainer.sHelperMatrix_D);
+                MatrixUtil.transformCoords(DisplayObjectContainer.sHelperMatrix_D, 0.0, 0.0, DisplayObjectContainer.sHelperPoint_D);
+                out.setTo(DisplayObjectContainer.sHelperPoint_D.x, DisplayObjectContainer.sHelperPoint_D.y, 0, 0);
             }
             else if (numChildren == 1) {
                 this._children[0].getBounds(targetSpace, out);
@@ -251,11 +251,11 @@ module StarlingJS {
                 var child: DisplayObject = this._children[i];
                 if (child.isMask) continue;
 
-                DisplayObjectContainer.sHelperMatrix.copyFrom(child.transformationMatrix);
-                DisplayObjectContainer.sHelperMatrix.invert();
+                DisplayObjectContainer.sHelperMatrix_D.copyFrom(child.transformationMatrix);
+                DisplayObjectContainer.sHelperMatrix_D.invert();
 
-                MatrixUtil.transformCoords(DisplayObjectContainer.sHelperMatrix, localX, localY, DisplayObjectContainer.sHelperPoint);
-                target = child.hitTest(DisplayObjectContainer.sHelperPoint);
+                MatrixUtil.transformCoords(DisplayObjectContainer.sHelperMatrix_D, localX, localY, DisplayObjectContainer.sHelperPoint_D);
+                target = child.hitTest(DisplayObjectContainer.sHelperPoint_D);
 
                 if (target) return this._touchGroup ? this : target;
             }
